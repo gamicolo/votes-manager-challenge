@@ -7,6 +7,7 @@ from sqlalchemy_utils import database_exists
 
 from fastapi import FastAPI
 from app.database.crud.elections import elections_crud
+from app.database.crud.lists import lists_crud
 
 from app.router.main_router import router
 from app.database.dbbase import Base
@@ -55,15 +56,20 @@ def client(db):
     with TestClient(app) as c:
         yield c
 
-
 @pytest.fixture
 def get_election(db):
     db_session.set(db)
     elections_crud.create(50)
-    #books_crud.create("9780140328721", "info")
 
-#@pytest.fixture
-#def get_book_and_comment(db):
-#    db_session.set(db)
-#    books_crud.create("9780140328721", "info")
-#    comments_crud.create("9780140328721", "comment")
+@pytest.fixture
+def set_all_lists(db):
+    db_session.set(db)
+    elections_crud.create(50)
+    lists_crud.create(1,'A')
+    lists_crud.create(1,'B')
+
+@pytest.fixture
+def set_empty_lists(db):
+    db_session.set(db)
+    elections_crud.create(50)
+
