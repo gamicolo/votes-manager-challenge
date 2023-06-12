@@ -1,4 +1,4 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, load_only
 from app.dependencies import db_session
 from app.database.models.elections import Elections as ElectionsModel
 from app.database.models.lists import Lists as ListsModel
@@ -28,10 +28,11 @@ class ListsCRUD():
         """
 
         db = db_session.get()
-        db_lists = db.query(ListsModel).filter(ListsModel.election_id == election_id).all() 
-        if not db_lists:
+        db_rows = db.query(ListsModel).filter(ListsModel.election_id == election_id).options(load_only('name')).all()
+        if not db_rows:
             raise NotFoundOnDBException
-        return db_lists.name
+
+        return [row.name for row in db_rows]
 
     def update(self, election_id: int, list_name: str):
         """
