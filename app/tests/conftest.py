@@ -8,6 +8,7 @@ from sqlalchemy_utils import database_exists
 from fastapi import FastAPI
 from app.database.crud.elections import elections_crud
 from app.database.crud.lists import lists_crud
+from app.database.crud.votes import votes_crud
 
 from app.router.main_router import router
 from app.database.dbbase import Base
@@ -73,3 +74,27 @@ def set_empty_lists(db):
     db_session.set(db)
     elections_crud.create(50)
 
+@pytest.fixture
+def set_lists_with_votes(db):
+    db_session.set(db)
+    elections_crud.create(5)
+    lists_crud.create(1,'A')
+    lists_crud.create(1,'B')
+    lists_crud.create(1,'C')
+    lists_crud.create(1,'D')
+    lists_crud.create(1,'E')
+    votes_crud.create(1,'A',10)
+    votes_crud.create(1,'B',5)
+    votes_crud.create(1,'C',20)
+    votes_crud.create(1,'D',0)
+    votes_crud.create(1,'E',10)
+
+@pytest.fixture
+def set_lists_without_votes(db):
+    db_session.set(db)
+    elections_crud.create(5)
+    lists_crud.create(1,'A')
+    lists_crud.create(1,'B')
+    lists_crud.create(1,'C')
+    lists_crud.create(1,'D')
+    lists_crud.create(1,'E')
