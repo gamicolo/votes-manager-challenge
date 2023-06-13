@@ -9,7 +9,7 @@ def create_list_in_db(election_id: int, list_name: str):
         #the create method of list_crud instance validates the existance of the election_id before create the list
         list_created = lists_crud.create(election_id, list_name)
     except AlreadyExistsOnDBException as error:
-        raise HTTPException(status_code=409, detail="The XXXX it's already exist on the system")
+        raise HTTPException(status_code=409, detail=f"The list with the name {list_name} for the election with id {election_id} already exist on the system")
 
     return list_created
 
