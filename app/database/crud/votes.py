@@ -39,7 +39,7 @@ class VotesCRUD():
         if not db_rows:
             raise NotFoundOnDBException
 
-        return [{row.list_name: row.votes} for row in db_rows]
+        return {row.list_name: row.votes for row in db_rows}
 
     #TODO evaluar si se debera quitar este metodo
     def update(self, election_id: int, list_name: str, votes: int):
