@@ -50,15 +50,4 @@ class ListsCRUD():
        
         return db_list
 
-#    def get_list_id(self, list_name: str):
-#        """
-#        Get election list name
-#        """
-#
-#        db = db_session.get()
-#        db_list = db.query(ListsModel).filter(ListsModel.id == list_name).first()
-#        if not db_list:
-#            raise NotFoundOnDBException
-#        return db_list.name
-
 lists_crud = ListsCRUD()
