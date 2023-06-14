@@ -9,6 +9,7 @@ router = APIRouter(prefix="/elections", tags=["/elections"])
 
 @router.post("/")
 async def create_election(request: Request, db: Session = Depends(get_db)):
+
     db_session.set(db)
     try:
         request_json = await request.json()
@@ -24,30 +25,44 @@ async def create_election(request: Request, db: Session = Depends(get_db)):
     
 @router.get("/{election_id}")
 def get_number_of_seats(election_id: int, db: Session = Depends(get_db)):
+
     db_session.set(db)
     return elections_service.get_number_of_seats_from_db(election_id)
 
+
 @router.put("/{election_id}")
-def update_number_of_seats(election_id: int, request: Request, db: Session = Depends(get_db)):
+async def update_number_of_seats(election_id: int, request: Request, db: Session = Depends(get_db)):
+
+    db_session.set(db)
+    try:
+        request_json = await request.json()
+    except:
+        raise HTTPException(status_code=422, detail="Missing parameters on request body or its imcomplete")
+
+    if not (request_json and 'seats' in request_json and request_json['seats']):
+        raise HTTPException(status_code=422, detail="Missing parameter 'seats' on request body or its imcomplete")
+    seats = request_json['seats']
+
+    return elections_service.update_number_of_seats_in_db(election_id, seats)
+
+@router.get("/{election_id}/results")
+def get_elections_result(election_id: int, db: Session = Depends(get_db)):
 
     db_session.set(db)
 
-    request_json = request.json()
-    if not (request_json and 'seats' in request_json and request_json['seats']):
-        raise HTTPException(status_code=422, detail="Missing parameter 'seats' on request body or its imcomplete")
+    return elections_service.get_elections_result(election_id)
 
-    return elections_service.update_number_of_seats_in_db(seats)
+@router.put("/{election_id}/results")
+async def store_elections_result(request: Request, election_id: int, db: Session = Depends(get_db)):
+    
+    db_session.set(db)
+    try:
+        request_json = await request.json()
+    except:
+        raise HTTPException(status_code=422, detail="Missing parameters on request body or its imcomplete")
 
-#@router.put("/{seats}")
-#def update_number_of_seats(seats: int, db: Session = Depends(get_db)):
-#
-#    db_session.set(db)
-#    return elections_service.update_number_of_seats_in_db(seats)
+    if not (request_json and 'seats_distribution' in request_json and request_json['seats_distribution']):
+        raise HTTPException(status_code=422, detail="Missing parameter 'seats_distribution' on request body or its imcomplete")
+    seats_distribution = request_json['seats_distribution']
 
-#@router.delete("/{isbn}")
-#def delete_book_db(isbn: str, db: Session = Depends(get_db)):
-#    if not validate_isbn(isbn):
-#        raise HTTPException(status_code=422, detail="the isbn must be a digit of 10 or 12 characters length")
-#
-#    db_session.set(db)
-#    return books_service.delete_book_in_db(isbn)
+    return elections_service.store_elections_result_in_db(election_id, seats_distribution)
