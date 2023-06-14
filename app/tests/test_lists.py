@@ -43,3 +43,11 @@ def test_post_create_valid_list(set_empty_lists, client):
     assert response.json()['name'] == expected_list_name
     assert response.status_code == 200
 
+def test_update_list_name_of_valid_election(set_all_lists, client):
+    election_id=1
+    expected_list_name='A'
+
+    response = client.post(f"/lists",json={'election_id':election_id, 'name':expected_list_name})
+
+    assert response.json()['name'] == expected_list_name
+    assert response.status_code == 200
