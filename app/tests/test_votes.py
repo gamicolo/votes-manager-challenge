@@ -6,15 +6,15 @@ from app.config import settings
 #GET
 def test_get_all_votes_of_lists_with_valid_election_id(set_lists_with_votes, client):
     election_id=1
-    expected_votes=[{'A': 10}, {'B': 5}, {'C': 20}, {'D': 0}, {'E': 10}]
+    expected_votes={'A': 10, 'B': 5, 'C': 20, 'D': 0, 'E': 10}
 
     response = client.get(f"/votes/{election_id}")
 
-    assert response.json()[0]['A'] == 10
-    assert response.json()[1]['B'] == 5
-    assert response.json()[2]['C'] == 20
-    assert response.json()[3]['D'] == 0
-    assert response.json()[4]['E'] == 10
+    assert response.json().get('A') == 10
+    assert response.json().get('B') == 5
+    assert response.json().get('C') == 20
+    assert response.json().get('D') == 0
+    assert response.json().get('E') == 10
     assert response.status_code == 200
 
 #GET
