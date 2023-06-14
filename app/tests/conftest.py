@@ -58,7 +58,7 @@ def client(db):
         yield c
 
 @pytest.fixture
-def get_election(db):
+def set_election(db):
     db_session.set(db)
     elections_crud.create(50)
 
@@ -98,3 +98,23 @@ def set_lists_without_votes(db):
     lists_crud.create(1,'C')
     lists_crud.create(1,'D')
     lists_crud.create(1,'E')
+
+@pytest.fixture
+def set_lists_with_votes_for_elections_result(db):
+    db_session.set(db)
+    elections_crud.create(7)
+    lists_crud.create(1,'A')
+    lists_crud.create(1,'B')
+    lists_crud.create(1,'C')
+    lists_crud.create(1,'D')
+    lists_crud.create(1,'E')
+    votes_crud.create(1,'A',340000)
+    votes_crud.create(1,'B',280000)
+    votes_crud.create(1,'C',160000)
+    votes_crud.create(1,'D',60000)
+    votes_crud.create(1,'E',15000)
+
+@pytest.fixture
+def set_election_with_seats_distribution(db):
+    db_session.set(db)
+    elections_crud.create(3,{'A':2, 'B':1, 'C':0})

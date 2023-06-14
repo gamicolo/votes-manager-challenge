@@ -1,10 +1,10 @@
 from app.tests.conftest import app
-#from app.database.crud.books import books_crud
 from app.database.crud.elections import elections_crud
 from fastapi.testclient import TestClient
 from app.config import settings
 
-def test_get_election_found(get_election, client):
+#### GET
+def test_get_number_of_seats_from_valid_election(set_election, client):
     num_of_seats=50
     election_id=1
     response = client.get(f"/elections/{election_id}")
@@ -12,115 +12,83 @@ def test_get_election_found(get_election, client):
     assert response.json() == num_of_seats
     assert response.status_code == 200
 
-#def test_get_election_not_found(client):
-#    election_id=1
-#    response = client.get(f"/elections/{election_id}")
-#
-#    #assert response.status_code == 404
+def test_get_number_of_seats_from_invalid_election(client):
+    election_id=100
+    expected_detail_string = f'No seats assigned for the election with id {election_id} were found on the system'
 
-#### GET /books/{isbn}
-#def test_get_books_ok(get_book, client):
-#    isbn='9780140328721'
-#    response = client.get("/books/{isbn}".format(isbn=isbn))
-#    
-#    assert response.json()['isbn'] == isbn
-#    assert response.status_code == 200
-#
-#def test_get_books_not_found(client):
-#    isbn='9780140328721'
-#    response = client.get("/books/{isbn}".format(isbn=isbn))
-#    
-#    assert response.status_code == 404
-#    assert response.text == '{"detail":"No book were found on the system"}'
-#
-#
-#### POST /elections
-def test_post_election_creation_success(client):
+    response = client.get(f"/elections/{election_id}")
+
+    assert response.json()['detail'] == expected_detail_string
+    assert response.status_code == 404
+
+def test_get_seats_distribution_from_funciton_valid_election(set_lists_with_votes_for_elections_result, client):
+    election_id=1
+
+    response = client.get(f"/elections/{election_id}/results")
+
+    assert response.json().get('A') == 3
+    assert response.json().get('B') == 3
+    assert response.json().get('C') == 1
+    assert response.json().get('D') == 0
+    assert response.json().get('E') == 0
+    assert response.status_code == 200
+
+def test_get_seats_distribution_from_db_valid_election(set_election_with_seats_distribution, client):
+    election_id=1
+
+    response = client.get(f"/elections/{election_id}/results")
+
+    assert response.json().get('A') == 2
+    assert response.json().get('B') == 1
+    assert response.json().get('C') == 0
+    assert response.status_code == 200
+
+#### POST 
+def test_create_election_and_store_number_of_seats_success(client):
     num_of_seats=50
     election_id=1
 
     response = client.post("/elections", json={'seats': num_of_seats})
     
-    #print(response.json())
-
     assert response.status_code == 200
     assert response.json()['id'] == election_id
     assert response.json()['seats'] == num_of_seats
+    assert response.json()['seats_distribution'] == {}
 
-#def test_post_books_not_found_on_provider(client, requests_mock):
-#    isbn='9780140328720'
-#    info='info'
-#
-#    requests_mock.get(settings.BOOKS_PROVIDER_URL.format(isbn = isbn), json={}, status_code=200)
-#
-#    response = client.post("/books", json={'isbn': isbn,'info': info})
-#    
-#    assert response.status_code == 404
-#    assert response.json()['detail'] == 'Book not found on the books provider'
-#
-#def test_post_books_already_exists(get_book, client, requests_mock):
-#    isbn='9780140328721'
-#    info='info'
-#    json_body = {'isbn': isbn,'info': info}
-#    requests_mock.get(settings.BOOKS_PROVIDER_URL.format(isbn = isbn), json=json_body, status_code=200)
-#
-#    response = client.post("/books", json={'isbn': isbn,'info': info})
-#    print(response.json())
-#    
-#    assert response.status_code == 409
-#    assert response.text == '{"detail":"The ISBN it\'s already exist on the system"}'
-#
-#def test_post_books_missing_parameter(client, requests_mock):
-#    isbn='9780140328721'
-#    info='info'
-#    json_body = {'isbn': isbn,'info': info}
-#    requests_mock.get(settings.BOOKS_PROVIDER_URL.format(isbn = isbn), json=json_body, status_code=200)
-#
-#    response = client.post("/books", json={})
-#    print(response.json())
-#
-#    assert response.status_code == 422
-#    assert response.json()['detail'] == 'Missing parameter "isbn" on request body or its imcomplete'
-#
-#
-#### PUT /books/{isbn}
-#def test_put_books_ok(get_book, client, requests_mock):
-#    isbn='9780140328721'
-#    info='info'
-#    json_body = {'isbn': isbn,'info': info}
-#    requests_mock.get(settings.BOOKS_PROVIDER_URL.format(isbn = isbn), json=json_body, status_code=200)
-#
-#    response = client.put("/books/{isbn}".format(isbn=isbn), json={'isbn': isbn,'info': info})
-#    
-#    print(response.json())
-#
-#    assert response.status_code == 200
-#    assert response.json()['isbn'] == isbn
-#    assert response.json()['info'] == str({'isbn': isbn,'info': info})
-#
-#def test_put_books_not_found_on_provider(client, requests_mock):
-#    isbn='9780140328720'
-#    info='info'
-#
-#    requests_mock.get(settings.BOOKS_PROVIDER_URL.format(isbn = isbn), json={}, status_code=200)
-#
-#    response = client.put("/books/{isbn}".format(isbn=isbn), json={'isbn': isbn,'info': info})
-#    
-#    assert response.status_code == 404
-#    assert response.json()['detail'] == 'Book not found on the books provider'
-#
-#### DELETE /books/{isbn}
-#def test_delete_books_ok(get_book, client):
-#    isbn='9780140328721'
-#    response = client.delete("/books/{isbn}".format(isbn=isbn))
-#    
-#    assert response.json()['isbn'] == isbn
-#    assert response.status_code == 200
-#
-#def test_delete_books_not_found(client):
-#    isbn='9780140328721'
-#    response = client.delete("/books/{isbn}".format(isbn=isbn))
-#    print(response.json())
-#    
-#    assert response.status_code == 404
-#    assert response.json()['detail'] == "The ISBN it's does not exists on the system"
+def test_create_election_without_seats_parameter(set_election, client):
+    election_id=1
+    num_of_seats=10
+    expected_detail_string = "Missing parameter 'seats' on request body or its imcomplete"
+
+    response = client.post("/elections")
+
+    assert response.json()['detail'] == expected_detail_string
+    assert response.status_code == 422
+
+#### PUT
+def test_store_elections_result_success(set_election, client):
+    num_of_seats=50
+    election_id=1
+    seats_distribution={'A':10, 'B':5, 'C': 0}
+
+    response = client.put(f"/elections/{election_id}/results", json={'seats_distribution': seats_distribution})
+    
+    assert response.status_code == 200
+    assert response.json()['id'] == election_id
+    assert response.json()['seats'] == num_of_seats
+    assert response.json()['seats_distribution'].get('A') == 10
+    assert response.json()['seats_distribution'].get('B') == 5
+    assert response.json()['seats_distribution'].get('C') == 0
+
+def test_update_number_of_seats_for_valid_elections(set_election, client):
+    num_of_seats=10
+    election_id=1
+
+    response = client.put(f"/elections/{election_id}", json={'seats': num_of_seats})
+
+    #print(response.json())
+    
+    assert response.status_code == 200
+    assert response.json()['id'] == election_id
+    assert response.json()['seats'] == num_of_seats
+    assert response.json()['seats_distribution'] == {}
