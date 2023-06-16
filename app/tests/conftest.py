@@ -125,21 +125,6 @@ def set_election_with_seats_distribution(db):
     elections_crud.create(3,{'A':2, 'B':1, 'C':0})
 
 @pytest.fixture
-def db_with_user_1():
-    db = db_session.get()
-    db_user = UserModel( 
-                username='johndoe',
-                full_name= 'John Doe',
-                email='johndoe@example.com',
-                hashed_password=login_services.pwd_context.hash('12345678'),
-                disable=False
-              )
-    db.add(db_user)
-    db.commit()
-    db.refresh(db_user)
-    yield db
-
-@pytest.fixture
 def db_with_user(db):
     db_session.set(db)
     db_user = UserModel( 
