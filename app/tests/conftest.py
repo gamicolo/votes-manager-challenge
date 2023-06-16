@@ -10,6 +10,11 @@ from app.database.crud.elections import elections_crud
 from app.database.crud.lists import lists_crud
 from app.database.crud.votes import votes_crud
 
+from app.database.models.login import User as UserModel
+from app.database.schemas.login import User, UserInDB
+
+from app.services import login as login_services
+
 from app.router.main_router import router
 from app.database.dbbase import Base
 
@@ -118,3 +123,45 @@ def set_lists_with_votes_for_elections_result(db):
 def set_election_with_seats_distribution(db):
     db_session.set(db)
     elections_crud.create(3,{'A':2, 'B':1, 'C':0})
+
+@pytest.fixture
+def db_with_user_1():
+    db = db_session.get()
+    db_user = UserModel( 
+                username='johndoe',
+                full_name= 'John Doe',
+                email='johndoe@example.com',
+                hashed_password=login_services.pwd_context.hash('12345678'),
+                disable=False
+              )
+    db.add(db_user)
+    db.commit()
+    db.refresh(db_user)
+    yield db
+
+@pytest.fixture
+def db_with_user(db):
+    db_session.set(db)
+    db_user = UserModel( 
+                username='johndoe',
+                full_name= 'John Doe',
+                email='johndoe@example.com',
+                hashed_password=login_services.pwd_context.hash('12345678'),
+                disable=False
+              )
+    db.add(db_user)
+    db.commit()
+    db.refresh(db_user)
+    yield db
+    
+@pytest.fixture
+def dummy_user():
+    user = UserInDB( 
+            username='johndoe',
+            full_name= 'John Doe',
+            email='johndoe@example.com',
+            hashed_password=login_services.pwd_context.hash('12345678'),
+            disable=False
+    )
+    return user
+
