@@ -4,7 +4,6 @@ from app.config import settings
 from app.database.schemas.login import UserInDB
 from app.database.models.login import User as UserModel
 
-#from fastapi.testclient import TestClient
 from fastapi import HTTPException
 from jose import jwt
 

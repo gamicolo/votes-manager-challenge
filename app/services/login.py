@@ -1,4 +1,3 @@
-#from app.database.crud.votes import votes_crud
 from app.database.errors import NotFoundOnDBException, AlreadyExistsOnDBException
 
 from datetime import datetime, timedelta
@@ -15,9 +14,6 @@ from app.config import settings
 from app.dependencies import pwd_context, oauth2_scheme
 
 from sqlalchemy.orm import Session
-
-#pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")#pasar a dependencies
-#oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")#pasar a dependencies
 
 def verify_password(plain_password: str, hashed_password: str):
     """
@@ -37,7 +33,6 @@ def get_user(db: Session, username: str):
     """
 
     user_from_db = db.query(UserModel).filter(UserModel.username == username).first()
-    print(user_from_db)
 
     if user_from_db:
         return UserInDB(**user_from_db)
