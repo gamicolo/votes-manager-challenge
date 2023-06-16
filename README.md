@@ -8,6 +8,7 @@ python3 -m pytest [test_file]
 ## To run the api
 ```
 ./run_dockerfile.sh
+```
 
 ## OpenApi doc
 ```
