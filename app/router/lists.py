@@ -33,7 +33,7 @@ def get_all_lists(election_id: int, db: Session = Depends(get_db)):
     return lists_service.get_all_lists_from_db(election_id)
 
 @router.put("/{election_id}")
-def update_(election_id: int, request: Request, db: Session = Depends(get_db)):
+def update_list_name(election_id: int, request: Request, db: Session = Depends(get_db)):
 
     db_session.set(db)
     try:
@@ -44,9 +44,5 @@ def update_(election_id: int, request: Request, db: Session = Depends(get_db)):
     if not (request_json and 'name' in request_json and request_json['name']):
         raise HTTPException(status_code=422, detail="Missing parameter 'name' on request body or its imcomplete")
     list_name = request_json['name']
-
-#    if not (request_json and 'election_id' in request_json and request_json['election_id']):
-#        raise HTTPException(status_code=422, detail="Missing parameter 'election_id' on request body or its imcomplete")
-#    election_id = request_json['election_id']
 
     return lists_service.update_name_in_db(election_id, list_name)
