@@ -2,20 +2,12 @@ API for votes managment. Developed with Python, FastApi, Pytest, SQLALchemy, Doc
 
 ## To run the unit tests
 ```
-pytest
+python3 -m pytest [test_file]
 ```
 
 ## To run the api
 ```
-docker build . -t votes-manager
-docker run --name votes-manager-container -p 8000:8000/tcp votes-manager
-```
-
-## clean:
-```
-docker stop votes-manager-container
-docker rm votes-manager-container
-```
+./run_dockerfile.sh
 
 ## OpenApi doc
 ```
