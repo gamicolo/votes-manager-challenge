@@ -1,6 +1,5 @@
 from app.tests.conftest import app
 from app.database.crud.elections import elections_crud
-from fastapi.testclient import TestClient
 from app.config import settings
 
 #### GET

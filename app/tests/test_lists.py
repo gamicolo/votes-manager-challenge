@@ -1,6 +1,5 @@
 from app.tests.conftest import app
 from app.database.crud.lists import lists_crud
-from fastapi.testclient import TestClient
 from app.config import settings
 
 def test_get_all_lists_with_valid_election_id(set_all_lists, client):
