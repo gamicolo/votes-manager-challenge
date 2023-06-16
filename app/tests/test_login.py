@@ -8,8 +8,18 @@ from fastapi import HTTPException
 from jose import jwt
 
 #### Services
-#def test_get_user(db_with_user):
-    #TODO
+def test_get_user_with_user_in_db(db_with_user):
+
+    username='johndoe'
+    expected_full_name= 'John Doe'
+    expected_email='johndoe@example.com'
+    expected_disable=False
+
+    user=login_services.get_user(db_with_user, username)
+
+    assert user.full_name==expected_full_name
+    assert user.email==expected_email
+    assert user.disable==expected_disable
 
 def test_get_user_with_user_not_in_db(db):
 
@@ -43,7 +53,6 @@ def test_authenticate_user_success(mocker,dummy_user):
     username='johndoe'
     password='12345678'
     hashed_password=login_services.pwd_context.hash(password)
-
     mocker.patch('app.services.login.get_user', return_value=dummy_user)
 
     user_in_db = login_services.authenticate_user(mocker, username, password)
@@ -51,15 +60,15 @@ def test_authenticate_user_success(mocker,dummy_user):
     assert user_in_db.username == 'johndoe'
 
 
-#def test_authenticate_user_user_in_db(db_with_user):
-#
-#    username='johndoe'
-#    password='12345678'
-#    hashed_password=login_services.pwd_context.hash(password)
-#
-#    user_in_db = login_services.authenticate_user(db_with_user, username, password)
-#
-#    assert user_in_db.username == 'johndoe'
+def test_authenticate_user_user_in_db(db_with_user):
+
+    username='johndoe'
+    password='12345678'
+    hashed_password=login_services.pwd_context.hash(password)
+
+    user_in_db = login_services.authenticate_user(db_with_user, username, password)
+
+    assert user_in_db.username == 'johndoe'
 
 
 def test_authenticate_user_not_user_in_db(mocker):
